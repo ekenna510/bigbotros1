@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<launch>
+
+
+<!-- https://github.com/kth-ros-pkg/ridgeback/blob/master/ridgeback_navigation/launch/amcl_demo.launch -->
+
+  <param name="use_sim_time" value="false" />
+
+  <!-- Run the map server with the desired map -->
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find bigbot_nav)/config/bigbot_map_server.yaml"/>
+
+  <!--- Run AMCL -->
+ <include file="$(find bigbot_nav)/launch/include/amcl.launch" />
+
+  <!--- Run Move Base -->
+ <include file="$(find bigbot_nav)/launch/include/move_base.launch" />
+
+  <!-- disbled until tf is right -->
+
+  <!--node name="rviz" pkg="rviz" type="rviz" args="-d $(find bigbot)/rviz/odom.rviz" /-->
+  <include file="$(find ydlidar)/launch/lidar.launch" />  
+  <include file="$(find bigbot_description)/launch/displaybigbot2.launch" />
+	<!--node name="rviz" pkg="rviz" type="rviz" args="-d $(find bigbot)/rviz/odom.rviz" / this one is bad--> 
+
+</launch>
+
+

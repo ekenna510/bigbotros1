@@ -1,0 +1,21 @@
+<launch>
+
+ <!--joy node -->
+ <node respawn="true" pkg="joy" type="joy_node" name="joy" >
+   <param name="dev" type="string" value="/dev/input/js0" />
+   <param name="deadzone" value="0.05" />
+   <param name="autorepeat_rate" value="5"/>
+   <param name="coalesce_interval" value="0.02"/>
+ </node>
+ <!-- Axes left stick -->
+ <param name="axis_linear" value="1" type="int"/> 
+ <!-- Axes originally was 0 left stick change to right stick -->
+ <param name="axis_angular" value="2" type="int"/>
+ <param name="scale_linear" value="1" type="double"/>
+ <param name="scale_angular" value="3.14" type="double"/>
+ <!-- deadman r1 right upper button -->
+ <param name="deadman_button" value="11" type="double"/>
+
+ <node pkg="bigbot" type="joyteleop" name="joyteleop" output="screen"/>
+ 
+</launch>

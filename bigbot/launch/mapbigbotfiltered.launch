@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<launch>
+	<arg name="prefix" />
+	<arg name="model" />
+	<arg name="gui" default="False" />
+        <!-- based on model passed in you may need to change base_frame in config/robot folder-->
+	<param name="robot_description" textfile="$(find bigbot_description)/urdf/$(arg model)" />
+	<param name="use_gui" value="$(arg gui)"/>
+	<!--<node name="joint_state_publisher2" pkg="bigbot" type="state_publisher" ></node>-->
+	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" ></node>
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find bigbot)/rviz/urdf.rviz" />
+	<include file="$(find ydlidar)/launch/lidar.launch" />
+
+        <!-- The move_base node -->
+        <include file="$(find bigbot_nav)/launch/bigbotnavodom.launch" />
+  <!-- Run the map server with the desired map -->
+  <!--node name="map_server" pkg="map_server" type="map_server" args="$(find bigbot_nav)/config/bigbot_map_server.yaml"/-->
+
+
+ <!-- gmapping with defaults except maxranges,map_update_interval, and size of map -->
+<!-- maybe set minimumScore to 50 -->
+
+ <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
+    <rosparam>
+      odom_frame: odom
+      map_update_interval: 2
+      maxUrange: 6.0
+      maxRange: 5.0
+      sigma: 0.05
+      kernelSize: 1
+      lstep: 0.05
+      astep: 0.05
+      iterations: 5
+      lsigma: 0.075
+      ogain: 3.0
+      lskip: 0
+      minimumScore: 0.0
+      srr: 0.1
+      srt: 0.2
+      str: 0.1
+      stt: 0.2
+      linearUpdate: 1.0
+      angularUpdate: 0.5
+      temporalUpdate: -1.0
+      resampleThreshold: 0.5
+      particles: 30
+      xmin: -5.0
+      ymin: -5.0
+      xmax: 5.0
+      ymax: 5.0
+      delta: 0.01
+      llsamplerange: 0.01
+      llsamplestep: 0.01
+      lasamplerange: 0.005
+      lasamplestep: 0.005
+      transform_publish_period: 0.05
+      occ_thresh: 0.25
+      base_frame: base_footprint
+    
+   </rosparam>
+</node>
+
+
+
+</launch>

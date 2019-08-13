@@ -1,0 +1,27 @@
+<launch>
+
+ <!--joy node -->
+ <node respawn="true" pkg="joy" type="joy_node" name="joy" >
+   <param name="dev" type="string" value="/dev/input/js0" />
+   <param name="deadzone" value="0.05" />
+   <param name="autorepeat_rate" value="5"/>
+   <param name="coalesce_interval" value="0.02"/>
+ </node>
+
+
+ <!-- scale values -->
+ <param name="scale_linear" value=".5" type="double"/>
+ <param name="scale_angular" value="1.57" type="double"/>
+
+ <rosparam file="$(find bigbot)/config/robot/wiredjoy.yaml" command="load" />
+ <!-- deadman L2 right upper button -->
+ <param name="deadman_button" value="6" type="double"/>
+ <param name="action_triangle" value="5" type="double"/>
+ <param name="action_circle" value="7" type="double"/>
+
+
+
+
+ <node pkg="bigbot" type="joyteleop" name="joyteleop"/>
+ 
+</launch>

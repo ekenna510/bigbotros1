@@ -1,0 +1,19 @@
+pwm:
+  forward:
+    left:
+      min: 187
+      max: 500
+    right:
+      min: 245
+      max: 500
+  backward:
+    left:
+      min: 170
+      max: 500
+    right:
+      min: 230
+      max: 500
+  listenpwmmsg: false
+port: "/dev/atmegaslave"
+useslave: true
+base_frame: "base_footprint"

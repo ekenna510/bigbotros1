@@ -1,0 +1,74 @@
+#For full documentation of the parameters in this file, and a list of all the
+#parameters available for TrajectoryPlannerROS, please see
+#http://www.ros.org/wiki/base_local_planner
+TrajectoryPlannerROS:
+  #Set the acceleration limits of the robot efk overrode these from 3.2 2.5 2.5 
+  acc_lim_theta: 2.0
+  acc_lim_x: 1.5
+  acc_lim_y: 1.5
+
+  #Set the velocity limits of the robot
+  max_vel_x: 0.65
+  min_vel_x: 0.1
+  max_vel_y: 0.65
+  min_vel_y: 0.1
+
+  max_rotational_vel: 1.0
+  min_rotational_vel: -1.0
+
+  min_in_place_rotational_vel: 0.2
+
+  #The velocity the robot will command when trying to escape from a stuck situation
+  escape_vel: -0.1
+  
+  #For this example, we'll use a holonomic robot
+  holonomic_robot: false
+
+  #Since we're using a holonomic robot, we'll set the set of y velocities it will sample
+# y_vels: [-0.3, -0.1, 0.1, -0.3]
+
+  #Set the tolerance on achieving a goal
+  xy_goal_tolerance: 0.2
+  yaw_goal_tolerance: 0.05
+  latch_xy_goal_tolerance: true 
+
+  #We'll configure how long and with what granularity we'll forward simulate trajectories
+  sim_time: 1.7
+  sim_granularity: 0.025
+  angular_sim_granularity: 0.025
+  vx_samples: 3
+  vtheta_samples: 20
+# controller_frequency: 20
+
+
+
+  #Parameters for scoring trajectories
+  goal_distance_bias: 0.8
+  path_distance_bias: 0.6
+  occdist_scale: 0.01
+  heading_lookahead: 0.325
+
+  pdist_scale: 1.0
+  gdist_scale: 1.0
+  occdist_scale: 0.01
+  heading_lookahead: 0.325
+
+  heading_scoring: false
+  heading_scoring_timestep: 0.8
+  publish_cost_grid_pc: false
+
+
+
+
+  #We'll use the Dynamic Window Approach to control instead of Trajectory Rollout for this example
+  dwa: true
+
+  #How far the robot must travel before oscillation flags are reset
+  oscillation_reset_dist: 0.05
+
+  #Eat up the plan as the robot moves along it
+  prune_plan: true
+
+  #get rid of warning message about meter_scoring not being set
+  meter_scoring: true
+

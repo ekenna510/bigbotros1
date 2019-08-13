@@ -1,0 +1,83 @@
+<launch>
+  <!--x y z yaw pitch roll framid childframid period -->
+  <!--node name="FrontSonar_broadcaster" pkg="tf" type="static_transform_publisher" args=".0508 0 .0953 0 0 0 base_link FrontSonar 100"/>
+  <node name="LeftFSonar_broadcaster" pkg="tf" type="static_transform_publisher" args="0 .0635 .0953 1.5707 0 0 base_link LeftFSonar 100"/>
+  <node name="LeftBSonar_broadcaster" pkg="tf" type="static_transform_publisher" args="-.0826 .0635 .0953 1.5707 0 0 base_link LeftBSonar 100"/>
+  <node name="RighttSonar_broadcaster" pkg="tf" type="static_transform_publisher" args="0 -.0635 .0953 -1.5707 0 0 base_link RightSonar 100"/-->
+
+  <!--node name="Laser_to_base_broadcaster" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 base_link laser_base 100"/>
+  <node name="Base_to_laser_broadcaster" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 laser_base base_link  100"/-->
+
+  <!--node name="left_wheel_broadcaster" pkg="tf" type="static_transform_publisher" args="0.01 0.01 0 1.5707 1.5707 0 base_link left_wheel 100"/>
+  <node name="right_wheel_broadcaster" pkg="tf" type="static_transform_publisher" args="0.01 0.01 0 1.5707 -1.5707 0 base_link right_wheel 100"/-->
+
+
+<node pkg="amcl" type="amcl" name="amcl" output="screen">
+  <!-- Publish scans from best pose at a max of 10 Hz -->
+  <param name="odom_model_type" value="diff"/>
+  <param name="odom_alpha5" value="0.1"/>
+  <param name="transform_tolerance" value="0.3" />
+  <param name="gui_publish_rate" value="10.0"/>
+  <param name="laser_max_beams" value="30"/>-
+  <param name="min_particles" value="100"/>
+  <param name="max_particles" value="5000"/>
+  <param name="kld_err" value="0.01"/>
+  <param name="kld_z" value="0.99"/>
+  <param name="odom_alpha1" value="0.2"/>
+  <param name="odom_alpha2" value="0.2"/>
+  <!-- translation std dev, m -->
+  <param name="odom_alpha3" value="0.8"/>
+  <param name="odom_alpha4" value="0.2"/>
+  <param name="laser_z_hit" value="0.49"/>
+  <param name="laser_z_short" value="0.05"/>
+  <param name="laser_z_max" value="0.05"/>
+  <param name="laser_z_rand" value="0.49"/>
+  <param name="laser_sigma_hit" value="0.2"/>
+  <param name="laser_lambda_short" value="0.1"/>
+  <param name="laser_lambda_short" value="0.1"/>
+  <param name="laser_model_type" value="likelihood_field"/>
+  <!-- <param name="laser_model_type" value="beam"/> -->
+  <param name="laser_likelihood_max_dist" value="2.0"/>
+  <param name="update_min_d" value="0.2"/>
+  <param name="update_min_a" value="0.5"/>
+  <param name="odom_frame_id" value="odom"/>
+  <param name="resample_interval" value="2"/>
+  <!--param name="transform_tolerance" value="0.3"/--> 
+  <param name="recovery_alpha_slow" value="0.001"/>
+  <param name="recovery_alpha_fast" value="0.1"/>
+
+  <param name="initial_pose_x" value="0.0"/>
+  <param name="initial_pose_y" value="0.0"/>
+  <param name="initial_pose_a" value="0.0"/>
+  <param name="use_map_topic" value="true"/>
+  <param name="first_map_only" value="true"/>
+  <param name="laser_min_range" value="-1.0"/>
+  <param name="laser_max_range" value="2.54"/>
+  <param name="base_frame_id" value="base_link"/>
+  <param name="global_frame_id" value="map"/>
+</node>
+
+
+
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base_node" output="screen">
+    <param name="footprint_padding" value="0.01" />
+    <param name="controller_frequency" value="10.0" />
+    <param name="controller_patience" value="3.0" />
+
+    <param name="oscillation_timeout" value="30.0" />
+    <param name="oscillation_distance" value="0.5" />
+
+
+    <rosparam file="pibot_costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="pibot_costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="pibot_local_costmap_params.yaml" command="load" />
+    <rosparam file="pibot_global_costmap_params.yaml" command="load" />
+    <rosparam file="pibot_base_local_planner_params.yaml" command="load" />
+
+  </node>
+  <arg name="map_yaml" value="/home/pi/catkin_ws/pibot_map_server.yaml"/>
+  <node name="mymap_server" pkg="mymap_server" type="mymap_server" args=" $(arg map_yaml)" respawn="false"  output="screen" />
+
+
+
+ </launch>

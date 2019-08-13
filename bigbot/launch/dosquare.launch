@@ -1,0 +1,7 @@
+<launch>
+	<node pkg="bigbot" name="dosquare" type="dosquare" output="screen"/>
+	<node pkg="rosbag" type="record" name="robot_bag"
+	    args="record  /odom /cmd_vel --lz4 "
+	    />
+
+</launch>

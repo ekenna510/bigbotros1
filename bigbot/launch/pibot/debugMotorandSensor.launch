@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="beginner_tutorials" type="MotorandSensor" name="MotorandSensor" launch-prefix="lxterminal -e gdb --args" />
+</launch>

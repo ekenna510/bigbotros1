@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- this movebase to be used for amcl and gmapping
+  -->
+
+  <!-- The move_base node -->
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+
+    <rosparam file="$(find bigbot_nav)/config/bigbot_costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find bigbot_nav)/config/bigbot_costmap_common_params.yaml" command="load" ns="local_costmap" />
+
+    <!-- note the /map om the next 2 lines -->
+    <rosparam file="$(find bigbot_nav)/config/map/bigbot_local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find bigbot_nav)/config/map/bigbot_global_costmap_params.yaml" command="load" />
+
+    <rosparam file="$(find bigbot_nav)/config/bigbot_base_local_planner_params.yaml" command="load" />
+    <rosparam file="$(find bigbot_nav)/config/bigbot_move_base.yaml" command="load" />
+
+    <param name="base_global_planner" type="string" value="navfn/NavfnROS" />
+    <param name="base_local_planner" value="base_local_planner/TrajectoryPlannerROS"/>
+
+
+  </node>
+
+
+</launch>

@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="beginner_tutorials" type="pubOdom" name="pubOdom" launch-prefix="gdb --args" output="screen"/>
+</launch>

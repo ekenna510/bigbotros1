@@ -1,0 +1,9 @@
+<launch>
+  <node pkg="turtlesim" type="turtlesim_node" name="sim"/>
+  <node pkg="beginner_tutorials" type="teleop" name="teleop" output="screen"/>
+  <!-- Axes -->
+  <param name="scale_linear" value=".5" type="double"/>
+  <param name="scale_angular" value=".4" type="double"/>
+  <node pkg="beginner_tutorials" type="pubOdom" name="pubOdom" output="screen"/>
+  <node pkg="beginner_tutorials" type="Motor" name="Motor" launch-prefix="sudo" output="screen"/>
+</launch>

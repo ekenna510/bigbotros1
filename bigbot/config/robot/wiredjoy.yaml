@@ -1,0 +1,35 @@
+invert_linear         : false
+invert_angular        : false
+
+
+
+button_select         : 8
+button_start          : 9
+button_stick_left     : 10
+button_stick_right    : 11
+button_L1             : 4
+button_L2             : 6
+button_R1             : 5
+button_R2             : 7
+button_action_triangle: 0
+button_action_circle  : 1
+button_action_cross   : 2
+button_action_square  : 3
+button_cross_up       : -1
+button_cross_right    : -1
+button_cross_down     : -1
+button_cross_left     : -1
+
+
+axis_cross_up         :  1
+axis_cross_right      :  0
+axis_cross_down       :  1
+axis_cross_left       :  0
+axis_stick_left_up    :  5
+axis_stick_left_left  :  4
+axis_stick_right_up   :  3
+axis_stick_right_left :  2
+
+linear_axes           :  1
+angular_axes          :  2
+

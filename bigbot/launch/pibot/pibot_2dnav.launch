@@ -1,0 +1,31 @@
+<launch>
+  <!--x y z yaw pitch roll framid childframid period -->
+  <node name="FrontSonar_broadcaster" pkg="tf" type="static_transform_publisher" args=".0508 0 .0953 0 0 0 base_link FrontSonar 100"/>
+  <node name="LeftFSonar_broadcaster" pkg="tf" type="static_transform_publisher" args="0 .0635 .0953 1.5707 0 0 base_link LeftFSonar 100"/>
+  <node name="LeftBSonar_broadcaster" pkg="tf" type="static_transform_publisher" args="-.0826 .0635 .0953 1.5707 0 0 base_link LeftBSonar 100"/>
+  <node name="RighttSonar_broadcaster" pkg="tf" type="static_transform_publisher" args="0 -.0635 .0953 -1.5707 0 0 base_link RightSonar 100"/>
+
+  <!--node name="left_wheel_broadcaster" pkg="tf" type="static_transform_publisher" args="0.01 0.01 0 1.5707 1.5707 0 base_link left_wheel 100"/>
+  <node name="right_wheel_broadcaster" pkg="tf" type="static_transform_publisher" args="0.01 0.01 0 1.5707 -1.5707 0 base_link right_wheel 100"/-->
+
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" />
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base_node" output="screen">
+    <param name="footprint_padding" value="0.01" />
+    <param name="controller_frequency" value="10.0" />
+    <param name="controller_patience" value="3.0" />
+
+    <param name="oscillation_timeout" value="30.0" />
+    <param name="oscillation_distance" value="0.5" />
+
+
+    <rosparam file="pibot_costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="pibot_costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="pibot_local_costmap_params.yaml" command="load" />
+    <rosparam file="pibot_global_costmap_params.yaml" command="load" />
+    <rosparam file="pibot_base_local_planner_params.yaml" command="load" />
+
+  </node>
+  <arg name="map_yaml" value="/home/pi/catkin_ws/pibot_map_server.yaml"/>
+  <node name="mymap_server" pkg="mymap_server" type="mymap_server" args=" $(arg map_yaml)" respawn="false"  output="screen" />
+
+ </launch>

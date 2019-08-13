@@ -1,0 +1,19 @@
+<launch>
+
+    <!-- motorcontrol with correct base frame without comms to slave-->
+
+    <node pkg="bigbot" name="motorControl" type="motorControl" required="true" output="screen">
+		<rosparam command="load" file="$(find bigbot)/config/robot/motorcontroltestbaselink.yaml" />
+	</node>
+
+    <!-- now publish right model transforms bigbot2.urdf for base_link -->
+ 	<arg name="prefix" />
+	<arg name="model" default="bigbot2.urdf" />
+	<arg name="gui" default="False" />
+        <!-- based on model passed in you may need to change base_frame in config/robot folder-->
+	<param name="robot_description" textfile="$(find bigbot_description)/urdf/$(arg model)" />
+	<param name="use_gui" value="$(arg gui)"/>
+	<node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher"/>
+	<node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+
+</launch>

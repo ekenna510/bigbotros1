@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="pibot_sonar" type="pibot_sonar" name="pibot_sonar" launch-prefix="gdb --args" output="screen"/>
+</launch>

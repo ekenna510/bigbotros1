@@ -1,0 +1,5 @@
+<launch>
+  <node pkg="turtlesim" type="turtlesim_node" name="sim"/>
+  <node pkg="beginner_tutorials" type="pubOdom" name="pubOdom" output="screen"/>
+  <node pkg="beginner_tutorials" type="Motor" name="Motor" launch-prefix="sudo -E" output="screen"/>
+</launch>

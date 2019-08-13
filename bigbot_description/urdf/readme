@@ -1,0 +1,3 @@
+bigbot.xacro root is base_footprint
+bigbot2.xacro root is base_link
+

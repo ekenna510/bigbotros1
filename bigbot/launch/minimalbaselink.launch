@@ -1,0 +1,10 @@
+<launch>
+    <!-- motorcontrol with correct base frame-->
+    <param name="/use_sim_time" value="false"/>
+	<master auto="start"/>
+    <node pkg="bigbot" name="motorControl" type="motorControl" required="true" output="screen">
+		<rosparam command="load" file="$(find bigbot)/config/robot/motorcontrolbaselink.yaml" />
+	</node>
+
+
+</launch>

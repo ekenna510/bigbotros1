@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="beginner_tutorials" type="Motor" name="Motor" launch-prefix="gdb --args" output="screen"/>
+</launch>

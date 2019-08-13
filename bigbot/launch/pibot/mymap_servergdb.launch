@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="mymap_server" type="mymap_server" name="mymap_server" launch-prefix="gdb -ex --args" output="screen"/>
+</launch>
