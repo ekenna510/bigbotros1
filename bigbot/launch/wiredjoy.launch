@@ -1,5 +1,6 @@
 <launch>
-
+  <arg name="scale"     default=".5"/>
+  <arg name="angle"     default="1.57"/>
  <!--joy node -->
  <node respawn="true" pkg="joy" type="joy_node" name="joy" >
    <param name="dev" type="string" value="/dev/input/js0" />
@@ -10,8 +11,8 @@
 
 
  <!-- scale values -->
- <param name="scale_linear" value=".5" type="double"/>
- <param name="scale_angular" value="1.57" type="double"/>
+ <param name="scale_linear" value="$(arg scale)" type="double"/>
+ <param name="scale_angular" value="$(arg angle)" type="double"/>
 
  <rosparam file="$(find bigbot)/config/robot/wiredjoy.yaml" command="load" />
  <!-- deadman L2 right upper button -->

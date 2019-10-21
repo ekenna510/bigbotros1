@@ -113,11 +113,13 @@ const double RightY =143;// MaxRIGHT - (RightSlope * MaxSpeed);
 
 const double RIGHTMETERPERCLICK = 0.0004786; // (.5 rotation plus 8cm/ 808 original values in feet 0.015408; // original 0.016; //  oover rode orig value
 const int RIGHTTICKPERROTATION = 1282; // circumference in meter / RIGHTMETERPERCLICK
+const double RIGHTTICK2RAD = 0.00490108; //6.283184/1282 //radian in 1 rotation by tick in rotoation
 
 const double LEFTMETERPERCLICK =  0.000937; //(.5rotation (0.306713432) plus 4cm / 370 clicks)
 //0.008863831;// o;ringinal values in feet 0.02908081; //0.030287; original
 //.5 rotation plus 4cm
 const int LEFTTICKPERROTATION = 655; // circumference in meter / LEFTMETERPERCLICK
+const double LEFTTICK2RAD = 0.009592647; //6.283184/655 //radian in 1 rotation by tick in rotoation
 
 
 int lastleftclick=0,lastrightclick=0, deltaLeft, deltaRight,SlaveTimestamp = 0;
@@ -133,6 +135,7 @@ short mLeftPWM = 0, mRightPWM = 0, mLastLeftPWM = 0, mLastRightPWM = 0;
 // sent mLastDirection to invalid vaule to force sending direction for first call
 char mDirection = (char)'F', mLastDirection = 'Z';
 
+double lasttheta=0;
 
 bool mNeedNewCommand = false;
 bool mNeedDirection = false;
@@ -146,6 +149,7 @@ int angularVelocitytoPWM(int MotorMax, int MotorMin,double VelocityMax,double Ve
 
 bool ReadConfig();
 void CalcOdom();
+void CalcOdom2();
 
 void RequestConfig();
 void SetSonar( int Index);
@@ -155,6 +159,8 @@ bool SetEcho(int echo);
 
 public:
 std::string base_frame =  "base_link";
+std::string odom_frame =  "odom";
+
 void SetPose( geometry_msgs::Pose2D new_pose);
 void SetUseSlave(bool UseSlave);
 void CloseSerial();
@@ -492,6 +498,147 @@ void MotorControl::TwistCallBack(const geometry_msgs::Twist::ConstPtr& msg)
     }
 } //ucCommandCallback
 
+
+void MotorControl::CalcOdom2()
+{  
+    // code from turtlebot3
+
+
+  double delta_s, theta, delta_theta;
+
+
+   int localleftclick,localrightclick,dt;
+   double  VelLeft, VelRight, Velth, deltaX, deltaY,deltath,linear, angular;
+
+//        long lastleftclick=0,lastrightclick=0, deltaLeft, deltaRight;
+
+   //get time period for tick difference
+   dt = msensor.getTimeStamp()-SlaveTimestamp ;
+   // first time through  SlaveTimestamp=0 default to 100 ms
+   if (dt > 200)
+   {
+       dt = 100;
+   }
+
+   SlaveTimestamp = msensor.getTimeStamp();
+
+   localleftclick = msensor.getLeftClick();
+   localrightclick = msensor.getRightClick();
+
+   // how many click did wee see.
+   deltaLeft =  (localleftclick -lastleftclick);
+   deltaRight = (localrightclick - lastrightclick);
+
+   // save current click count for next run
+   lastleftclick = localleftclick;
+   lastrightclick = localrightclick;
+
+   double dtSeconds = dt/1000.0;
+
+   VelLeft =  LEFTTICK2RAD * (double)deltaLeft; //VelLeft/dtSeconds;
+   VelRight = RIGHTTICK2RAD * (double)deltaRight;//VelRight/dtSeconds;
+
+   delta_s = WHEELRADIUS * (deltaLeft + deltaRight) / 2.0;
+   theta   = WHEELRADIUS * (deltaRight - deltaLeft) / BASE;  
+
+   delta_theta = theta - lasttheta;
+
+  bot_pose.x += delta_s * cos(bot_pose.theta + (delta_theta / 2.0));
+  bot_pose.y += delta_s * sin(bot_pose.theta + (delta_theta / 2.0));
+  bot_pose.theta += delta_theta;
+
+  linear = delta_s / dtSeconds;
+  angular = delta_theta / dtSeconds;
+
+  lasttheta = theta;
+
+
+
+
+   ROS_INFO_COND(LOG_INFO_DEBUG == 1 && (localleftclick > 0 || localrightclick > 0) ,"locallc %d lastlc %d lrc %d lastrc %d linear %f angular %f Vel l %f r %f th %f | delta x %f y %f new X %f y %f pwm L %d R %d",localleftclick,lastleftclick,localrightclick,lastrightclick,linear, angular,VelLeft,VelRight, Velth, 		deltaX,deltaY, bot_pose.x, bot_pose.y,msensor.getLeftMotor(),msensor.getRightMotor());
+
+
+
+
+   /*
+   https://github.com/ros-controls/ros_controllers/blob/kinetic-devel/diff_drive_controller/src/diff_drive_controller.cpp
+
+   */
+
+
+   /**
+    * This is a message object. You stuff it with data, and then publish it.
+    */
+//x,y,th, VelLeft, VelRight, Velth, deltaLeft, deltaRight
+
+   msg.pose.pose.position.x= bot_pose.x;
+   msg.pose.pose.position.y= bot_pose.y;
+   msg.pose.pose.position.z= 0;
+
+
+   //set the position
+   geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(bot_pose.theta);
+
+   msg.pose.pose.orientation = odom_quat;
+
+   msg.twist.twist.linear.x = linear; //vx;//vx
+   msg.twist.twist.linear.y = 0;//vy
+   msg.twist.twist.angular.z = angular;
+
+   msg.header.frame_id = odom_frame;
+   msg.child_frame_id = base_frame;
+
+
+   //---------------------------------------------------------------------------------------
+   /*
+   http://answers.ros.org/question/11973/gathering-wheel-encoder-data-and-publishing-on-the-odom-topic/
+   */
+
+   //first, we'll publish the transform over tf
+   geometry_msgs::TransformStamped odom_trans;
+   odom_trans.header.stamp = ros::Time::now();
+   odom_trans.header.frame_id = odom_frame;
+   odom_trans.child_frame_id = base_frame;
+
+   odom_trans.transform.translation.x = bot_pose.x;
+   odom_trans.transform.translation.y = bot_pose.y;
+   odom_trans.transform.translation.z = 0.0;
+   odom_trans.transform.rotation = odom_quat;
+
+   //send the transform
+   ptr_broadcaster->sendTransform(odom_trans);
+
+   //next, we'll publish the odometry message over ROS
+   //  nav_msgs::Odometry odom;
+   msg.header.stamp = odom_trans.header.stamp;//CurrentEncoderTime;
+
+       //publish the message
+
+   //---------------------------------------------------------
+
+           ptr_pub->publish(msg);
+   //----------------------------------------------------------------------
+
+   // send sonar
+   sonarmsg.range = msensor.GetFrontRange();
+   ptr_pubR->publish(sonarmsg);
+
+   if (  mPubVel )
+   {
+      geometry_msgs::Vector3 vel;
+      vel.x = VelLeft;
+      vel.y = VelRight;
+      vel.z=0;
+      ptr_pubvel->publish(vel);
+   }
+
+
+}
+
+
+
+
+
 void MotorControl::CalcOdom()
 {
    int localleftclick,localrightclick,dt;
@@ -744,7 +891,7 @@ void MotorControl::readLoop()
                //  ROS_INFO("sensor reading");
                  msensor.getSensorData(&ptr[BeginCommand],mconfig);
                  // call odom I think
-                 CalcOdom();
+                 CalcOdom2();
             }
             else
             {
@@ -1028,7 +1175,7 @@ localrightclick = localrightclick + (int) VelRight;
 msensor.setSensorTestData(localleftclick, localrightclick,mLeftPWM, mRightPWM, mLastDirection);
 
 
-   CalcOdom();
+   CalcOdom2();
 }
 void MotorControl::CloseSerial()
 {
@@ -1130,6 +1277,7 @@ int main(int argc, char **argv)
 
 
   rosNode.param<std::string>("/motorControl/base_frame",mc.base_frame,mc.base_frame);
+  rosNode.param<std::string>("/motorControl/odom_frame",mc.odom_frame,mc.odom_frame);
 
 
   //Subscribe to ROS messages cmd_vel 
